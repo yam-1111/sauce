@@ -70,5 +70,5 @@ class Sound(commands.Cog):
       await ctx.send('**music resumed**')
       await ctx.voice_client.resume()
       
-#def setup(client):
+def setup(client):
     client.add_cog(Sound(client))
