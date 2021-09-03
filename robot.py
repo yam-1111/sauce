@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 import asyncio
-from sound import Sound
+from cogs.sound import Sound
 
 token = 'your_token'
 client = commands.Bot(command_prefix='$')
