@@ -1,6 +1,7 @@
 import pafy
 import youtube_dl
 import asyncio
+from pytube import Playlist
 import discord
 from discord.ext import commands
 class Sound(commands.Cog):
@@ -28,8 +29,10 @@ class Sound(commands.Cog):
 
     async def play_song(self, ctx, song):   
         url = pafy.new(song).getbestaudio().url
-        ctx.voice_client.play(discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(url)), after=lambda error: self.bot.loop.create_task(self.check_queue(ctx)))
+        ctx.voice_client.play(discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(url)), after=lambda error: self.bot.loop.run_until_complete(self.check_queue(ctx))) 
         ctx.voice_client.source.volume = 0.8
+        await self.send_msg(ctx, song)
+    async def send_msg(self, ctx, song):
         url2 = pafy.new(song)
         seconds = url2.length
         def convert_timer(seconds):
@@ -41,7 +44,7 @@ class Sound(commands.Cog):
             else:
                 return '{:02d}:{:02d}:{:02d}'.format(a, b, c)
 
-        embed2= discord.Embed(title=f'Now Playing:  {url2.title}', url=song, description= f':clock4:  {convert_timer(seconds)}',color=0x843cdd)
+        embed2= discord.Embed(title=f'Now Playing:  {url2.title}', url=song, description= f':clock4:   {convert_timer(seconds)}',color=0x843cdd)
         embed2.set_thumbnail(url=url2.bigthumb)    
         await ctx.send(embed=embed2)
         
@@ -54,6 +57,7 @@ class Sound(commands.Cog):
             return await ctx.voice_client.disconnect()
 
         await ctx.send("I am not connected to a voice channel.")
+        self.song_queue[ctx.guild.id].clear()
 
     @commands.command(name='p')
     async def play(self, ctx, *, song=None):
@@ -67,8 +71,14 @@ class Sound(commands.Cog):
             await ctx.author.voice.channel.connect()
        
 
-        # handle song where song isn't url
-        if not ("youtube.com/watch?" in song or "https://youtu.be/" in song):
+        # handle song whether it is url, playlist or a keyword then if not throw none.
+        if ('https://www.youtube.com/playlist' in song):
+            playlist = Playlist(song)
+            for video in playlist:
+                self.song_queue[ctx.guild.id].append(video) 
+            await ctx.send('playlist added to queue!')
+                
+        elif not ("youtube.com/watch?" in song or "https://youtu.be/" in song):
             await ctx.send("fetching results...")
 
             result = await self.search_song(1, song, get_url=True)
@@ -81,7 +91,7 @@ class Sound(commands.Cog):
         if ctx.voice_client.source is not None:
             queue_len = len(self.song_queue[ctx.guild.id])
 
-            if queue_len < 10:
+            if queue_len < 30:
                 self.song_queue[ctx.guild.id].append(song)
                 return await ctx.send(f"Has been added to the queue at position: {queue_len+1}.")
 
@@ -149,12 +159,25 @@ class Sound(commands.Cog):
             return await ctx.send("No songs in queue yet.")
             skip = False
         skip = True
-
+       
         if skip:
             ctx.voice_client.stop()
             await self.check_queue(ctx)
+    @commands.command()
+    async def remove(self, ctx, amount: int=None):
+        try:
+            if amount is not None:
+                amount -= 1
+                self.song_queue[ctx.guild.id].pop(amount)
+                await ctx.send('succefully remove song!')
+                await self.queue(self, ctx)
+            if amount is None:
+                await ctx.send('please remove number based on queue, cant find? try **$q**')
+        except Exception as e:
+            print(e)
+            await ctx.send('error')
 
-
+      
     @commands.command()
     async def pause(self, ctx):
         if ctx.voice_client.is_paused():
