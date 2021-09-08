@@ -4,6 +4,7 @@ import asyncio
 from pytube import Playlist
 import discord
 from discord.ext import commands
+
 class Sound(commands.Cog):
     def __init__(self, bot):
         self.bot = bot 
@@ -16,8 +17,6 @@ class Sound(commands.Cog):
             self.song_queue[guild.id] = []
 
     async def check_queue(self, ctx):
-        if len(self.song_queue[ctx.guild.id]) > 0:
-            ctx.voice_client.stop()
             await self.play_song(ctx, self.song_queue[ctx.guild.id][0])
             self.song_queue[ctx.guild.id].pop(0)
 
@@ -29,7 +28,8 @@ class Sound(commands.Cog):
 
     async def play_song(self, ctx, song):   
         url = pafy.new(song).getbestaudio().url
-        ctx.voice_client.play(discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(url)), after=lambda error: self.bot.loop.run_until_complete(self.check_queue(ctx))) 
+        ctx.voice_client.play(discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(url)), after=lambda error: self.bot.loop.create_task(self.check_queue(ctx)))
+        
         ctx.voice_client.source.volume = 0.8
         await self.send_msg(ctx, song)
     async def send_msg(self, ctx, song):
@@ -54,11 +54,13 @@ class Sound(commands.Cog):
     @commands.command()
     async def leave(self, ctx):
         if ctx.voice_client is not None:
+            await ctx.send(':door:  i leave your channel and clear queue ')
+                     
+            self.song_queue[ctx.guild.id].clear() 
             return await ctx.voice_client.disconnect()
+            
 
         await ctx.send("I am not connected to a voice channel.")
-        self.song_queue[ctx.guild.id].clear()
-
     @commands.command(name='p')
     async def play(self, ctx, *, song=None):
         if ctx.author.voice is None:
@@ -122,29 +124,32 @@ class Sound(commands.Cog):
 
     @commands.command(name='q')
     async def queue(self, ctx): # display the current guilds queue
-        if len(self.song_queue[ctx.guild.id]) == 0:
-            return await ctx.send("There are currently no songs in the queue.")
+        if ctx.author.voice is None:
+            await ctx.send(":upside_down: you are not in voice channel")
+        else:
+            if len(self.song_queue[ctx.guild.id]) == 0:
+                return await ctx.send("There are currently no songs in the queue.")
 
-        embed = discord.Embed(title="Song Queue", description="", colour=discord.Colour.blurple())
-        i = 1
-        for song in self.song_queue[ctx.guild.id]:
-            music=pafy.new(song)
-            queue_sec = music.length
-            # track recognition
-            def convert_timer(seconds):
-                a = (seconds//3600)
-                b=((seconds%3600)//60)
-                c=((seconds%3600)%60)
-                if a == 0:
-                    return '{:02d}:{:02d}'.format(b, c)
-                else:
-                    return '{:02d}:{:02d}:{:02d}'.format(a, b, c)
-            embed.description += f"{i}) {music.title} {convert_timer(queue_sec)}\n"
+            embed = discord.Embed(title="Song Queue", description="", colour=discord.Colour.blurple())
+            i = 1
+            for song in self.song_queue[ctx.guild.id]:
+                music=pafy.new(song)
+                queue_sec = music.length
+                # track recognition
+                def convert_timer(seconds):
+                    a = (seconds//3600)
+                    b=((seconds%3600)//60)
+                    c=((seconds%3600)%60)
+                    if a == 0:
+                        return '{:02d}:{:02d}'.format(b, c)
+                    else:
+                        return '{:02d}:{:02d}:{:02d}'.format(a, b, c)
+                embed.description += f"{i}) {music.title} {convert_timer(queue_sec)}\n"
 
-            i += 1
+                i += 1
 
-        embed.set_footer(text="tip: you can use #m to search tracks without playing")
-        await ctx.send(embed=embed)
+            embed.set_footer(text="tip: you can use #m to search tracks without playing")
+            await ctx.send(embed=embed)
 
     @commands.command()
     async def skip(self, ctx):
