@@ -1,0 +1,205 @@
+/* generated using html genarator.*/
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@100;300;400;500;700&family=Noto+Sans:wght@400;700&display=swap');
+
+.e1_2{ 
+	background-color:rgba(244.46450293064117, 229.67706441879272, 96.59008741378784, 1);
+    min-height: 100%;
+    min-width: 1024px;
+      
+    /* Set up proportionate scaling */
+    width: 100%;
+    height: auto;
+      
+    /* Set up positioning */
+    position: fixed;
+    top: 0;
+    left: 0;
+}
+.e1_33 { 
+	background-color:rgba(125.55278688669205, 73.51009547710419, 210.4645049571991, 1);
+	width:275px;
+	height:56px;
+	position:absolute;
+	left:380px;
+	top:406px;
+	border-top-left-radius:20px;
+	border-top-right-radius:20px;
+	border-bottom-left-radius:20px;
+	border-bottom-right-radius:20px;
+}
+.e1_3 { 
+    position: absolute;
+    width: 906px;
+    height: 106px;
+    left: 226px;
+    top: 259px;
+    
+    font-family: Noto Sans;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 72px;
+    line-height: 98px;
+    letter-spacing: -0.05em;
+    text-transform: lowercase;
+    
+    color: #000000;
+}
+.e1_10 { 
+	position: absolute;
+    width: 225px;
+    height: 65px;
+    left: 41px;
+    top: 31px;
+
+    font-family: Noto Sans;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 45px;
+    line-height: 61px;
+    letter-spacing: -0.083em;
+
+    color: #000000;
+}
+.e1_21 { 
+	position: absolute;
+    width: 100px;
+    height: 34px;
+    left: 165px;
+    top: 45px;
+
+    font-family: Noto Sans;
+    font-style: normal;
+    font-weight: 200;
+    font-size: 25px;
+    line-height: 34px;
+    letter-spacing: -0.083em;
+    color: #000000;
+    position: absolute;
+    
+
+    border: 1px solid #000000;
+    box-sizing: border-box;
+    border-radius: 30px;
+}
+.e1_22 { 
+	position: absolute;
+    width: 836px;
+    height: 45px;
+    left: 341px;
+    top: 347px;
+
+    font-family: Noto Sans;
+    font-style: normal;
+    font-weight: 300;
+    font-size: 25px;
+    line-height: 34px;
+    letter-spacing: -0.03em;
+
+    color: #000000;
+
+}
+.e1_24 { 
+	background-color:rgba(73.51009547710419, 210.4645049571991, 120.07458284497261, 1);
+	width:211px;
+	height:56px;
+	position:absolute;
+	left:444px;
+	top:406px;
+	border-top-left-radius:20px;
+	border-top-right-radius:20px;
+	border-bottom-left-radius:20px;
+	border-bottom-right-radius:20px;
+}
+.e1_34 { 
+	background-color:rgba(73.51009547710419, 120.07458284497261, 210.4645049571991, 1);
+	width:253px;
+	height:56px;
+	position:absolute;
+	left:670px;
+	top:406px;
+	border-top-left-radius:20px;
+	border-top-right-radius:20px;
+	border-bottom-left-radius:20px;
+	border-bottom-right-radius:20px;
+}
+.e1_18 { 
+	background-color:rgba(196.00000351667404, 196.00000351667404, 196.00000351667404, 0);
+	width:100px;
+	height:27px;
+	position:absolute;
+	left:161px;
+	top:52px;
+	border-top-left-radius:30px;
+	border-top-right-radius:30px;
+	border-bottom-left-radius:30px;
+	border-bottom-right-radius:30px;
+}
+
+
+.e1_28 { 
+	background-color: #7E4AD2;
+	width:36px;
+	height:41px;
+	position:relative;
+	left:393px;
+	top:414px;
+}
+.e1_31 { 
+	position: absolute;
+    width: 206px;
+    height: 35px;
+    left: 518px;
+    top: 410px;
+
+    font-family: Noto Sans;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 30px;
+    line-height: 41px;
+    letter-spacing: -0.05em;
+
+    color: #FFFFFF;
+
+}
+.e1_36 { 
+	background-color:#4A78D2;
+	width:40px;
+	height:41px;
+	position:absolute;
+	left:686px;
+	top:412px;
+}
+.e1_37 { 
+	position: absolute;
+    width: 201.73px;
+    height: 35px;
+    left: 744.79px;
+    top: 418.91px;
+
+    font-family: Noto Sans;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 25px;
+    line-height: 34px;
+    letter-spacing: -0.05em;
+
+    color: #FFFFFF;
+
+    transform: rotate(-0.7deg);
+}
+.fa-discord{
+    left: 30.7%;
+    right: 66.48%;
+    top: 57.5%;
+    bottom: 36.81%;
+
+    color: #FFFFFF;
+}
+.fa-python{
+    left: 30.7%;
+    right: 66.48%;
+    top: 57.5%;
+    bottom: 36.81%;
+
+    color: #FFFFFF;
+}
