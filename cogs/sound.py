@@ -17,6 +17,8 @@ class Sound(commands.Cog):
             self.song_queue[guild.id] = []
 
     async def check_queue(self, ctx):
+        #if len(self.song_queue[ctx.guild.id]) > 0:
+            #ctx.voice_client.stop()
             await self.play_song(ctx, self.song_queue[ctx.guild.id][0])
             self.song_queue[ctx.guild.id].pop(0)
 
@@ -35,6 +37,14 @@ class Sound(commands.Cog):
     async def send_msg(self, ctx, song):
         url2 = pafy.new(song)
         seconds = url2.length
+        def next_song():
+            try:
+                temp_song = self.song_queue[ctx.guild.id][1]
+                song = pafy.new(temp_song)
+                return song.title
+            except Exception as e:
+                return 'no queue yet'
+                print(e)
         def convert_timer(seconds):
             a = (seconds//3600)
             b=((seconds%3600)//60)
@@ -43,10 +53,16 @@ class Sound(commands.Cog):
                 return '{:02d}:{:02d}'.format(b, c)
             else:
                 return '{:02d}:{:02d}:{:02d}'.format(a, b, c)
+        embed2 = discord.Embed(title= url2.title, url=song, color=0x843cdd)
+        embed2.set_author(name='Now Playing: ')
+        embed2.add_field(name=f':clock4: Duration:', value=convert_timer(seconds))
+        embed2.set_thumbnail(url=url2.bigthumb)
+       # embed2.description(text=f'{convert_timer(seconds)}')
+        embed2.add_field(name=':musical_note: Next Song: ' ,value=next_song())
+        embed2.set_footer(text=f'requested by: {ctx.author.display_name}', icon_url=ctx.author.avatar_url)
+        await ctx.send(embed = embed2)
 
-        embed2= discord.Embed(title=f'Now Playing:  {url2.title}', url=song, description= f':clock4:   {convert_timer(seconds)}',color=0x843cdd)
-        embed2.set_thumbnail(url=url2.bigthumb)    
-        await ctx.send(embed=embed2)
+        
         
 
     
@@ -83,22 +99,28 @@ class Sound(commands.Cog):
         elif not ("youtube.com/watch?" in song or "https://youtu.be/" in song):
             await ctx.send("fetching results...")
 
-            result = await self.search_song(1, song, get_url=True)
+            result = await self.search_song(3, song, get_url=True)
 
             if result is None:
                 return await ctx.send("Sorry, I could not find the given song, try using my search command.")
 
-            song = result[0]
+            song = result[1]
 
         if ctx.voice_client.source is not None:
+            global music
+            music = pafy.new(song)
             queue_len = len(self.song_queue[ctx.guild.id])
 
             if queue_len < 30:
                 self.song_queue[ctx.guild.id].append(song)
-                return await ctx.send(f"Has been added to the queue at position: {queue_len+1}.")
+                embed2 = discord.Embed(title='Next Song', color=0x843cdd)
+                embed2.add_field(name=f':timer: Positioned at #{queue_len+1}', value= music.title)
+                embed2.set_thumbnail(url=music.bigthumb)
+                embed2.set_footer(text=f'requested by {ctx.author.display_name}', icon_url=ctx.author.avatar_url)
+                return await ctx.send(embed=embed2)
 
             else:
-                embed2 = discord.Embed(title='Queue overload please wait to finish current song', color=discord.Colour.red())
+                embed2 = discord.Embed(title=' :warning: Queue overload please wait to finish current song', color=discord.Colour.red())
                 return await ctx.send(embed = embed2)
 
         await self.play_song(ctx, song)
@@ -180,7 +202,7 @@ class Sound(commands.Cog):
                 await ctx.send('please remove number based on queue, cant find? try **$q**')
         except Exception as e:
             print(e)
-            await ctx.send('error')
+            await ctx.send('error, ')
 
       
     @commands.command()
