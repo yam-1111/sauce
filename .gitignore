@@ -26,7 +26,7 @@ share/python-wheels/
 *.egg
 MANIFEST
 #Lavalink files
-router/Lavalink.Jar
+router/Lavalink.jar
 router/logs
 
 # PyInstaller
