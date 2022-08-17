@@ -1,6 +1,11 @@
 
 """
 Edit this config file to run the server and the player itself
+
+localhost = local
+web hosting = web
+heroku = heroku
+repl.it = repl
 """
 from settings import server_config
 from router.routes import keep_run

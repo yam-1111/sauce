@@ -235,7 +235,18 @@ class Music_base(commands.Cog):
             )
             embed.set_thumbnail(url=photos.thumbnail(player.current.uri))
         await ctx.send(embed=embed)
-
+    @commands.command(aliases=['clear'])
+    async def clear_queue(self, ctx):
+        player = self.bot.lavalink.player_manager.get(ctx.guild.id)
+       
+        if not player.is_connected:
+            embed = discord.Embed(title=":warning: I'm not connected to any voice channels", colour=color.red)
+        if not ctx.author.voice or (player.is_connected and ctx.author.voice.channel.id != int(player.channel_id)):
+            embed = discord.Embed(title=":warning: Please join in my channel first", colour=color.red)
+        embed = discord.Embed(title=f"{len(self.guild_queues[ctx.guild.id])} track has been cleared",colour=color.red)
+        player.queue.clear()
+        await self.clear_playlist(ctx)
+        await ctx.send(embed=embed)
     @commands.command(aliases=['stop', 'dc', 's'])
     async def disconnect(self, ctx):
         player = self.bot.lavalink.player_manager.get(ctx.guild.id)
