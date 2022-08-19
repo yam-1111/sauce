@@ -6,7 +6,7 @@ load_dotenv(find_dotenv())
 class discord_config:
     prefix = "$"
     token = getenv('token')
-    yt_api_key = getenv('yt_api_token')
+    yt_key = getenv('yt_key')
     music_queue_item = 5
 
 

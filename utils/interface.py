@@ -63,7 +63,7 @@ class autoplay:
     def get_yt(data, num :int=20):
         lst = []
         orig_uri = re.findall(r'watch\?v=(\S{11})', data)
-        url = f"https://www.googleapis.com/youtube/v3/search?key={command.yt_api_key}&maxResults={num}&part=snippet&type=video&relatedToVideoId={orig_uri[0]}"
+        url = f"https://www.googleapis.com/youtube/v3/search?key={command.yt_key}&maxResults={num}&part=snippet&type=video&relatedToVideoId={orig_uri[0]}"
         result = requests.get(url).json()
         for n, x in enumerate(result):
             try:
