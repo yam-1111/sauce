@@ -81,8 +81,9 @@ class Music_base(commands.Cog):
 
     # cmds
     async def insert_player_song(self, ctx, track, track_index):
-        self.guild_queues[ctx.guild.id].insert(0, track['info']['uri'])
+        guildqueue = self.guild_queues[ctx.guild.id]
         player = self.bot.lavalink.player_manager.get(ctx.guild.id)
+        self.guild_queues[ctx.guild.id].insert(guildqueue.index(player.current.uri)+(track_index+1), track['info']['uri'])
         player.add(requester=ctx.author.id, track=track, index=track_index)
 
     async def player_song(self, ctx, track):

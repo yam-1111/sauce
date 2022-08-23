@@ -23,7 +23,7 @@ async def on_ready():
         if cogs.endswith('.py'):
             client.load_extension(f"cogs.{cogs[:-3]}")
             print(f"cogs.{cogs[:-3]} -- has been loaded")
-
+    await bot_status()
 
 
 @tasks.loop(seconds=20)
