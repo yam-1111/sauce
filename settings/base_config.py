@@ -7,10 +7,11 @@ class discord_config:
     prefix = "$"
     token = getenv('token')
     yt_key = getenv('yt_key')
-    music_queue_item = 5
+    music_queue_item = 10
 
 
 class base_server_config:
+    __version__ = "2.15"
     #lavaplayer configs 
     password = getenv('password')
     country = getenv('country')

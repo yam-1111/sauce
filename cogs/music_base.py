@@ -97,7 +97,11 @@ class Music_base(commands.Cog):
         song = await self.get_queue(ctx)
         player = self.bot.lavalink.player_manager.get(ctx.guild.id)
         print('statement exce')      
-        embed = discord.Embed(colour=color.fuchsia, title=player.current.title, url=player.current.uri)
+        
+        embed = discord.Embed(colour=color.fuchsia, 
+        title=player.current.title[:45] + "..."if len(player.current.title)>45 else player.current.title, 
+        url=player.current.uri)
+
         embed.set_author(name=f'{self.guild_queues[ctx.guild.id].index(player.current.uri)+1} / {len(self.guild_queues[ctx.guild.id])} Now Playing',icon_url=ui.yt)
         embed.add_field(
             value=f'Next song : {song} ', inline=True,
@@ -139,41 +143,6 @@ class Music_base(commands.Cog):
             song_name = song.title
             return song_name
     #commands
-
-    @commands.command(aliases=['i', 'insert'])
-    async def insert_track(self, ctx, track_index :typing.Optional[int]=0, *, query:str):
-        player = self.bot.lavalink.player_manager.get(ctx.guild.id)
-        if not url_rx.match(query.strip('<>')):
-            query = f'ytsearch:{query +" lyrics"}'
-        results = await player.node.get_tracks(query)
-        if not results or not results['tracks']:
-            return await ctx.send('Nothing found!')
-
-         # playlist   
-        if results['loadType'] == 'PLAYLIST_LOADED':
-            tracks = results['tracks']
-            for track in tracks:
-                await self.insert_player_song(ctx, track, track_index)
-            embed = discord.Embed(
-            title=f"{results['playlistInfo']['name']}" ,
-            colour=color.green
-            )
-            embed.set_author(f'💿 inserted {len(track)} tracks')
-
-        else:
-            track = results['tracks'][0]
-            await self.insert_player_song(ctx, track, track_index)
-            embed = discord.Embed(
-            title=f"{track['info']['title']}" 
-            ,url=f"{track['info']['uri']}",
-            colour=color.orange
-            )
-            
-
-
-        
-        embed.set_footer(text=f'requested by {ctx.author.display_name}', icon_url=ctx.author.avatar_url)
-        await ctx.send(embed=embed)
     @commands.command(aliases=['p'])
     async def play(self, ctx, *, query: str):
         player = self.bot.lavalink.player_manager.get(ctx.guild.id)
@@ -212,42 +181,8 @@ class Music_base(commands.Cog):
             await player.play()
             await self.playernow_song(ctx)
 
-    @commands.command(aliases=['q'])
-    async def queue(self, ctx, page: int=1):
-        items_per_page = discord_config.music_queue_item
-        player = self.bot.lavalink.player_manager.get(ctx.guild.id)
-       
-        pages = math.ceil(len(player.queue) / items_per_page)
-        if page > pages:
-            embed = discord.Embed(title=" :warning: You've reach the limit", colour=color.yellow)   
-        else:
-            start = (page - 1) * items_per_page
-            end = start + items_per_page
-            if len(player.queue) is None:
-                queue_list = 'No queue yet'
-            else:
-                queue_list = ''
-                for i, track in enumerate(player.queue[start:end], start=start):
-                    queue_list += f'{i + 1}) - [{mechanism.ms_duration(track.duration, track.stream)}] >> {track.title} \n'
-            embed = discord.Embed(colour=color.green, title=player.current.title, url=player.current.uri)
-            embed.add_field(value=f"```{'='*9} {len(player.queue)} tracks queued {'='*10}\n{queue_list}\n{'='*13} page {page} / {pages} {'='*13}```"
-            , 
-            name=f'{mechanism.ms_duration(player.current.duration, player.current.stream)} {await self.player_system_interface(ctx)}'
-            )
-            embed.set_thumbnail(url=photos.thumbnail(player.current.uri))
-        await ctx.send(embed=embed)
-    @commands.command(aliases=['clear'])
-    async def clear_queue(self, ctx):
-        player = self.bot.lavalink.player_manager.get(ctx.guild.id)
-       
-        if not player.is_connected:
-            embed = discord.Embed(title=":warning: I'm not connected to any voice channels", colour=color.red)
-        if not ctx.author.voice or (player.is_connected and ctx.author.voice.channel.id != int(player.channel_id)):
-            embed = discord.Embed(title=":warning: Please join in my channel first", colour=color.red)
-        embed = discord.Embed(title=f"{len(self.guild_queues[ctx.guild.id])} track has been cleared",colour=color.red)
-        player.queue.clear()
-        await self.clear_playlist(ctx)
-        await ctx.send(embed=embed)
+
+
     @commands.command(aliases=['stop', 'dc', 's'])
     async def disconnect(self, ctx):
         player = self.bot.lavalink.player_manager.get(ctx.guild.id)
@@ -265,23 +200,6 @@ class Music_base(commands.Cog):
         embed = discord.Embed(title=" :octagonal_sign: Succefully Disconnected", colour=color.green)
         await ctx.send(embed=embed)
 
-    @commands.command(aliases=['forceskip', 'fs'])
-    async def skip(self, ctx, amount: int=None):
-        player = self.bot.lavalink.player_manager.get(ctx.guild.id)
-
-        if amount is None:
-            amount = 1
-        else:
-            amount = amount
-        if not player.is_playing:
-            return await ctx.send('I`m not playing.')
-        if amount > len(player.queue):
-            await ctx.send(':warning: Invalid number of skip')
-        else:
-            await ctx.send('music skipped')
-            for i in range(amount):
-                await player.skip()
-            await self.playernow_song(ctx)
 
      #autoplay command
     async def capture_track(self, ctx, song):

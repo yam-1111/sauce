@@ -7,11 +7,10 @@ from utils.interface import color
 url_rx = re.compile(r'https?://(?:www\.)?.+')
 time_rx =re.compile('[0-9]+')
 
+
 class Music_control(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.repeat_counter={}
-
 
 
     @commands.command()

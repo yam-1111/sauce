@@ -3,6 +3,7 @@ import discord
 import os
 from discord.ext import commands, tasks
 from settings.base_config import discord_config as command
+from settings.base_config import base_server_config as bot_client
 # from router.routes import keep_run
 from random import choice
 from settings.config import keep_run
@@ -17,12 +18,18 @@ status = [
 async def on_ready():
     print(f"{'='*10} Online {'='*10}")
     import lavalink
-    print(f'Lavalink Version : {lavalink.__version__}')
-    print(f"{'='*20}")
+    print(f'Client version: {bot_client.__version__}\nLavalink Version : {lavalink.__version__} \nDiscord Version {discord.__version__}')
+    print(f"{'='*29}")
     for cogs in os.listdir('./cogs'):
         if cogs.endswith('.py'):
-            client.load_extension(f"cogs.{cogs[:-3]}")
+            try:
+                client.load_extension(f"cogs.{cogs[:-3]}")
+            except Exception as e:
+                print(f"{'='*10} Start of Error of cogs.{cogs[:-3]} {'='*10}")
+                print(e)
+                print(f"{'='*10} End of Error {'='*10}")
             print(f"cogs.{cogs[:-3]} -- has been loaded")
+    print('/'*30)
     await bot_status()
 
 
