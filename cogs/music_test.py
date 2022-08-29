@@ -4,7 +4,7 @@ import lavalink
 import asyncio
 import re
 import typing
-from utils.interface import color
+from utils.interface import *
 import discord
 
 from .music_base import Music_base
@@ -35,7 +35,7 @@ class Music_utils(commands.Cog):
             title=f"{results['playlistInfo']['name']}" ,
             colour=color.green
             )
-            embed.set_author(f'💿 inserted {len(track)} tracks')
+
 
         else:
             track = results['tracks'][0]
@@ -45,6 +45,8 @@ class Music_utils(commands.Cog):
             ,url=f"{track['info']['uri']}",
             colour=color.orange
             )
+        embed.set_author(name=f"inserted tracks")
+        await ctx.send(embed=embed)
     
     @commands.command(aliases=['forceskip', 'fs'])
     async def skip(self, ctx, amount: int=None):
@@ -74,7 +76,8 @@ class Music_utils(commands.Cog):
             embed = discord.Embed(title=":warning: Please join in my channel first", colour=color.red)
         embed = discord.Embed(title=f"{len(self.guild_queues[ctx.guild.id])} track has been cleared",colour=color.red)
         player.queue.clear()
-        await self.music_base.clear_playlist(ctx)
+        
+        await self.music_base.clear_list(ctx)
         await ctx.send(embed=embed)
 def setup(bot):
     bot.add_cog(Music_utils(bot))

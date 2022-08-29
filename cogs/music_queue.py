@@ -13,10 +13,12 @@ class Music_queue(commands.Cog):
 
     @commands.command(aliases=['q'])
     async def queue(self, ctx, page: int=1):
+        local_queue = self.music_base.guild_queue_detail[ctx.guild.id]
         items_per_page = discord_config.music_queue_item
         player = self.bot.lavalink.player_manager.get(ctx.guild.id)
        
-        pages = math.ceil(len(player.queue) / items_per_page)
+        pages = math.ceil(len(local_queue) / items_per_page)
+        print(pages)
         if page > pages:
             embed = discord.Embed(title=" :warning: You've reach the limit", colour=color.yellow)   
         else:
@@ -26,10 +28,10 @@ class Music_queue(commands.Cog):
                 queue_list = 'No queue yet'
             else:
                 queue_list = ''
-                for i, track in enumerate(player.queue[start:end], start=start):
-                    queue_list += f'{i + 1}) - [{mechanism.ms_duration(track.duration, track.stream)}] >> {track.title[:29]+".." if len(track.title) > 29 else track.title} \n'
+                for x,track in enumerate(self.music_base.guild_queue_detail[ctx.guild.id][start:end], start=start):
+                    queue_list += f'{x + 1}) { "[Now Playing]" if player.current.title == track[0] else mechanism.ms_duration(track[1], track[2])} >> {track[0][:29]+".." if len(track[0]) > 29 else track[0]} \n'
 
-            
+            print(queue_list)
             embed = discord.Embed(colour=color.green, 
             title=player.current.title[:45] + "..."if len(player.current.title)>45 else player.current.title,
              url=player.current.uri)

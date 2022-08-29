@@ -21,6 +21,7 @@ class Music_base(commands.Cog):
         self.bot = bot
         self.guild_queues = {}
         self.guild_autoplay = {}
+        self.guild_queue_detail = {}
         self.guild_db()
         if not hasattr(
             bot, "lavalink"
@@ -42,6 +43,7 @@ class Music_base(commands.Cog):
     def guild_db(self):
             for guild in self.bot.guilds:
                 self.guild_queues[guild.id] = []
+                self.guild_queue_detail[guild.id] = []
                 self.guild_autoplay[guild.id] = False
     def cog_unload(self):
         self.bot.lavalink._event_hooks.clear()
@@ -80,14 +82,37 @@ class Music_base(commands.Cog):
             await guild.voice_client.disconnect(force=True)
 
     # cmds
+    async def clear_list(self, ctx):
+        player = self.bot.lavalink.player_manager.get(ctx.guild.id)
+        listed_queue = self.guild_queue_detail[ctx.guild.id]
+        for x,y in enumerate(listed_queue):
+            for a,b in enumerate(y):
+                if not player.current.title == b[0]:
+                    print('removed')
+                    listed_queue.pop(x)
+        for track in self.guild_queues[ctx.guild.id]:
+            if not player.current.uri == track:
+                print('removed')
+                self.guild_queues[ctx.guild.id].remove(track)
+
+
     async def insert_player_song(self, ctx, track, track_index):
         guildqueue = self.guild_queues[ctx.guild.id]
         player = self.bot.lavalink.player_manager.get(ctx.guild.id)
+        # print(track['info']['uri'])
         self.guild_queues[ctx.guild.id].insert(guildqueue.index(player.current.uri)+(track_index+1), track['info']['uri'])
+        self.guild_queue_detail[ctx.guild.id].insert(guildqueue.index(player.current.uri)+(track_index+1),
+        (track['info']['title'], track['info']['duration'], track['info']['stream'])
+        )
         player.add(requester=ctx.author.id, track=track, index=track_index)
 
     async def player_song(self, ctx, track):
         self.guild_queues[ctx.guild.id].append(track['info']['uri'])
+        print(track['info']['title'], track['info']['duration'], track['info']['stream'], track['info']['uri'])
+        self.guild_queue_detail[ctx.guild.id].append(
+        (track['info']['title'], track['info']['duration'], track['info']['stream'])
+     
+        )
         player = self.bot.lavalink.player_manager.get(ctx.guild.id)
         player.add(requester=ctx.author.id, track=track)
 
@@ -97,7 +122,7 @@ class Music_base(commands.Cog):
         song = await self.get_queue(ctx)
         player = self.bot.lavalink.player_manager.get(ctx.guild.id)
         print('statement exce')      
-        
+
         embed = discord.Embed(colour=color.fuchsia, 
         title=player.current.title[:45] + "..."if len(player.current.title)>45 else player.current.title, 
         url=player.current.uri)
@@ -112,7 +137,6 @@ class Music_base(commands.Cog):
         embed.set_image(url=photos.thumbnail(player.current.uri))
         await ctx.send(embed=embed)
 
-    async def clear_playlist(self, ctx):
         player = self.bot.lavalink.player_manager.get(ctx.guild.id)
         for song in self.guild_queues[ctx.guild.id]:
             if song != player.current.uri:
@@ -183,7 +207,7 @@ class Music_base(commands.Cog):
 
 
 
-    @commands.command(aliases=['stop', 'dc', 's'])
+    @commands.command(aliases=['x','stop', 'dc', 's'])
     async def disconnect(self, ctx):
         player = self.bot.lavalink.player_manager.get(ctx.guild.id)
         if not player.is_connected:
@@ -192,12 +216,13 @@ class Music_base(commands.Cog):
             embed = discord.Embed(title=":warning: Please join in my channel first", colour=color.red)
         
         # Disconnect from the voice channel.
-        self.guild_queues[ctx.guild.id].clear()
+        embed = discord.Embed(title=" :octagonal_sign: Succefully Disconnected", colour=color.green)
         self.guild_autoplay.update({ctx.guild.id : False})
         player.queue.clear()
+
+        await self.clear_list(ctx)
         await player.stop()
         await ctx.voice_client.disconnect(force=True)
-        embed = discord.Embed(title=" :octagonal_sign: Succefully Disconnected", colour=color.green)
         await ctx.send(embed=embed)
 
 
