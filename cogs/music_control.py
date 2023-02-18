@@ -3,7 +3,7 @@ from discord.ext import commands, tasks
 import lavalink
 import asyncio
 import re
-from utils.interface import color
+from utils.interface import *
 url_rx = re.compile(r'https?://(?:www\.)?.+')
 time_rx =re.compile('[0-9]+')
 
